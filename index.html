@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande de Nourriture</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/email.min.js"></script>  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            user-select: none;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px; /* Ajusté pour prendre en compte la hauteur de la navbar */
+            bottom: 0;
+            width: 250px;
+            background-color: #f8f9fa;
+            color: ;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .sidebar a:hover {
+            color: #ffc107;
+        }
+        .content {
+            margin-left: 270px;
+            padding: 80px 20px 20px; /* 80px pour éviter le chevauchement avec la navbar */
+        }
+        .menu-item {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: white;
+            text-align: center;
+        }
+        .menu-item img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        /* --------------span */
+        #cart-count {
+        font-size: 0.8rem;
+        color: white;
+        background-color: red;
+        padding: 0.2em 0.6em;
+        border-radius: 50%;
+    }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Nourriture</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#menu"><i class="bi bi-box"></i> Produits</a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link" href="#cart">
+                            <i class="bi bi-cart"></i> Panier 
+                            <span id="cart-count" style="transform:translate(-60px, -5px);" class="position-fixed  badge rounded-pill bg-danger">
+                                0
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="apropos.html"><i class="bi bi-info-circle"></i> À Propos</a>
+                    </li>
+                </ul>
+                
+                <form class="d-flex" id="searchForm">
+                    <input id="searchInput" class="form-control me-2" type="search" placeholder="Rechercher un produit" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+
+
+
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2></h2>
+        <a href="#menu"><i class="bi bi-box"></i> Produits</a>
+        <a href="#cart"><i class="bi bi-cart"></i> Panier</a>
+        <a href="logout.html">Se déconnecter</a>
+
+        <div id="cart" class="mt-5">
+            <h2><i class="bi bi-cart"></i> Votre Panier</h2>
+            <ul id="cart-items" class="list-group mb-3"></ul>
+            <h4>Total : <span id="total">0</span> FCFA</h4>
+            <button id="place-order" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#orderModal">Passer la commande</button>
+        </div><br><br>
+        <div id="searchResults" class="mt-2"></div> <br><br><br><br><br><br><br><br><!-- Zone pour afficher les résultats de la recherche -->
+        <div class="row mt-3">
+        <div class="col text-light">
+            <p class="col nav-link">&copy; 2024 Nourriture. Tous droits réservés.</p>
+        </div>
+    </div>
+    </div>
+<br>
+    <!-- Main Content -->
+    <div class="content">
+        <h1 class="text-center mb-4">Commande de Nourriture</h1>
+
+        <!-- Menu Section -->
+        <div id="menu" class="row">
+            <!-- Les éléments du menu seront rendus ici -->
+        </div>
+
+        <!-- Cart Section -->
+        <!-- <div id="cart" class="mt-5">
+            <h2>Votre Panier</h2>
+            <ul id="cart-items" class="list-group mb-3"></ul>
+            <h4>Total : <span id="total">0</span> FCFA</h4>
+            <button id="place-order" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#orderModal">Passer la commande</button>
+        </div> -->
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderModalLabel">Passer la Commande</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="orderForm">
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Votre Numéro de Téléphone</label>
+                            <input type="tel" class="form-control" id="phoneNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Votre Email (optionnel)</label>
+                            <input type="email" class="form-control" id="email" placeholder="exemple@mail.com">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="confirmOrder">Confirmer la Commande</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        emailjs.init("GHsZTofn-felPBRC4"); // Remplacez par votre USER ID de EmailJS
+        // Exemple : menu des produits
+        const menu = [
+            { id: 1, name: "Pizza Margherita", price: 3500.00, image: "images/pizza.avif" },
+            { id: 2, name: "Burger Classic", price: 500.00, image: "images/burger.avif" },
+            { id: 3, name: "Salade Caesar", price: 600.00, image: "images/salade.jpg" },
+            { id: 4, name: "Pâtes Bolognaise", price: 800.00, image: "images/pates.avif" },
+            { id: 5, name: "Sushi", price: 1200.00, image: "images/sushi.avif" }
+        ];
+
+        const cart = [];
+
+        // Rendu des produits
+        function renderMenu(filteredMenu = menu) {
+            const menuContainer = document.getElementById("menu");
+            menuContainer.innerHTML = "";
+            filteredMenu.forEach(item => {
+                const menuItem = document.createElement("div");
+                menuItem.className = "col-md-4 menu-item";
+                menuItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" />
+                    <h3>${item.name}</h3>
+                    <p>Prix : ${item.price.toFixed(2)} FCFA</p>
+                    <button class="btn btn-primary" onclick="addToCart(${item.id})">Ajouter au panier</button>
+                `;
+                menuContainer.appendChild(menuItem);
+            });
+        }
+
+        function addToCart(id) {
+            const item = menu.find(i => i.id === id);
+            cart.push(item);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById("cart-items");
+            const totalElement = document.getElementById("total");
+            cartItems.innerHTML = "";
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                const cartItem = document.createElement("li");
+                cartItem.className = "list-group-item d-flex justify-content-between align-items-center";
+                cartItem.innerHTML = `
+                    ${item.name} - ${item.price.toFixed(2)} FCFA
+                    <button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">Supprimer</button>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+
+            totalElement.textContent = total.toFixed(2) ;   
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        document.getElementById("confirmOrder").addEventListener("click", () => {
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            const email = document.getElementById("email").value;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const orderDetails = cart.map(item => `${item.name} - ${item.price.toFixed(2)} FCFA`).join(", ");
+
+            if (!phoneNumber) {
+                alert("Veuillez entrer un numéro de téléphone !");
+                return;
+            }
+
+            // Envoi de l'email avec EmailJS
+            emailjs.send("service_6lbvwcb", "template_ws9ue7e", {
+                phone_number: phoneNumber,
+                email: email || "non fourni",
+                order_details: orderDetails,
+                total: total + " FCFA"
+            })
+            .then(function(response) {
+                alert("Commande envoyée avec succès !");
+            }, function(error) {
+                alert("Erreur lors de l'envoi de la commande : " + error.text);
+            });
+
+            // Clear cart and close modal
+            cart.length = 0;
+            renderCart();
+            const modal = bootstrap.Modal.getInstance(document.getElementById("orderModal"));
+            modal.hide();
+        });
+
+
+
+// --------------------------------span
+function addToCart(id) {
+    const item = menu.find(i => i.id === id);
+    cart.push(item);
+    updateCartCount(); // Met à jour le compteur
+    renderCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartCount(); // Met à jour le compteur
+    renderCart();
+}
+
+function updateCartCount() {
+    const cartCount = document.getElementById("cart-count");
+    cartCount.textContent = cart.length;
+
+    // Cache le compteur si le panier est vide
+    cartCount.style.display = cart.length > 0 ? "inline" : "none";
+}
+// -----------------logout-------------------
+ 
+// Fonction de recherche
+document.getElementById("searchForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const filteredMenu = menu.filter(item => item.name.toLowerCase().includes(query));
+
+    // Affichage des résultats de la recherche
+    const searchResults = document.getElementById("searchResults");
+    searchResults.innerHTML = "";  // Réinitialiser les résultats précédents
+
+    if (filteredMenu.length > 0) {
+        filteredMenu.forEach(item => {
+            const resultItem = document.createElement("div");
+            resultItem.className = "search-item";
+            resultItem.innerHTML = `
+                <p>${item.name} - ${item.price.toFixed(2)} FCFA</p>
+            `;
+            resultItem.addEventListener("click", () => {
+                // Vous pouvez ajouter ici une fonction pour ajouter l'élément au panier lorsqu'on clique sur un résultat de recherche
+                addToCart(item.id);
+                searchResults.innerHTML = "";  // Effacer les résultats après sélection
+                document.getElementById("searchInput").value = ""; // Effacer la barre de recherche
+            });
+            searchResults.appendChild(resultItem);
+        });
+    } else {
+        searchResults.innerHTML = "<p>Aucun produit trouvé.</p>";
+    }
+});
+
+
+        renderMenu();
+    </script>
+</body>
+</html>
